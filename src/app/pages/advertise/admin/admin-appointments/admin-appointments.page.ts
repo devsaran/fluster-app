@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {LoadingController, NavController, Platform, Slides, ToastController} from '@ionic/angular';
 import {HttpErrorResponse} from '@angular/common/http';
 
@@ -9,35 +9,34 @@ import {TranslateService} from '@ngx-translate/core';
 import * as moment from 'moment';
 
 // Page
-import {AbstractPage} from '../../abstract-page';
+import {AbstractAdminPage} from '../abstract-admin';
 
 // Model
-import {Appointment} from '../../../services/model/appointment/appointment';
-import {Item} from '../../../services/model/item/item';
+import {Appointment} from '../../../../services/model/appointment/appointment';
+import {Item} from '../../../../services/model/item/item';
 
 // Utils
-import {Converter, Comparator} from '../../../services/core/utils/utils';
-import {ItemsComparator} from '../../../services/core/utils/items-utils';
+import {Converter, Comparator} from '../../../../services/core/utils/utils';
+import {ItemsComparator} from '../../../../services/core/utils/items-utils';
 
 // Services
-import {AppointmentService} from '../../../services/core/appointment/appointment-service';
-import {AdsService} from '../../../services/advertise/ads-service';
-import {GoogleAnalyticsNativeService} from '../../../services/native/analytics/google-analytics-native-service';
+import {AppointmentService} from '../../../../services/core/appointment/appointment-service';
+import {AdsService} from '../../../../services/advertise/ads-service';
+import {GoogleAnalyticsNativeService} from '../../../../services/native/analytics/google-analytics-native-service';
+import {NavParamsService} from '../../../../services/core/navigation/nav-params-service';
+import {AdminAppointmentsService, AdminScheduledDates} from '../../../../services/core/appointment/admin-appoinments-service';
 
 @Component({
     selector: 'app-admin-appointments',
     templateUrl: './admin-appointments.page.html',
     styleUrls: ['./admin-appointments.page.scss'],
 })
-export class AdminAppointmentsPage extends AbstractPage {
+export class AdminAppointmentsPage extends AbstractAdminPage implements OnInit {
 
     @ViewChild('adsAdminAppointmentsSlider') slider: Slides;
 
-    private customBackActionSubscription: Subscription;
-
     itemEndCouldBeExtended: boolean = false;
 
-    item: Item;
     appointment: Appointment;
 
     // First slide
@@ -51,46 +50,49 @@ export class AdminAppointmentsPage extends AbstractPage {
     extendDateDisplay: string;
     itemEndThePast: boolean = false;
 
+    adminScheduledDates: AdminScheduledDates;
+
+    loaded: boolean = false;
+
     constructor(private platform: Platform,
-                private navController: NavController,
+                protected navController: NavController,
                 private loadingController: LoadingController,
                 private toastController: ToastController,
                 private translateService: TranslateService,
                 private appointmentService: AppointmentService,
-                private adsService: AdsService,
-                private googleAnalyticsNativeService: GoogleAnalyticsNativeService) {
-        super();
+                protected adsService: AdsService,
+                private googleAnalyticsNativeService: GoogleAnalyticsNativeService,
+                protected navParamsService: NavParamsService,
+                private adminAppointmentsService: AdminAppointmentsService) {
+        super(navController, adsService, navParamsService);
 
-        this.gaTrackView(this.platform, this.googleAnalyticsNativeService, this.RESOURCES.GOOGLE.ANALYTICS.TRACKER.VIEW.ADS.ADS_CLOSE);
+        this.gaTrackView(this.platform, this.googleAnalyticsNativeService, this.RESOURCES.GOOGLE.ANALYTICS.TRACKER.VIEW.ADS.ADMIN.APPOINTMENTS);
     }
 
-    ionViewWillEnter() {
-        this.initItem().then((item: Item) => {
-            this.item = item;
+    async ngOnInit() {
+        this.item = await this.initItem();
 
-            if (this.item != null) {
-                this.appointment = this.item.appointment;
+        if (this.item != null) {
+            this.appointment = this.item.appointment;
 
-                this.computeExtendDates().then(() => {
-                    // Do nothing
-                });
-            }
-        });
+            const promises = new Array();
+            promises.push(this.computeExtendDates());
+            promises.push(this.adminAppointmentsService.init(this.item, this.appointment));
 
-        this.overrideHardwareBackAction();
-    }
+            forkJoin(promises).subscribe(([empty, adminScheduledDates]: [void, AdminScheduledDates]) => {
+                this.adminScheduledDates = adminScheduledDates;
 
-    ionViewDidLeave() {
-        if (this.customBackActionSubscription) {
-            this.customBackActionSubscription.unsubscribe();
+                this.loaded = true;
+            });
+        } else {
+            this.loaded = true;
         }
     }
 
-    private overrideHardwareBackAction() {
-        this.platform.ready().then(() => {
-            this.customBackActionSubscription = this.platform.backButton.subscribe(() => {
-                this.backToPreviousSlide();
-            });
+    @HostListener('document:ionBackButton', ['$event'])
+    private overrideHardwareBackAction($event: any) {
+        $event.detail.register(100, async () => {
+            await this.backToPreviousSlide();
         });
     }
 
@@ -101,30 +103,15 @@ export class AdminAppointmentsPage extends AbstractPage {
             if (activeIndex > 0) {
                 this.slider.slidePrev();
             } else {
-                await this.navigateBackToDetails();
+                await this.navigateBack();
             }
         } else {
-            await this.navigateBackToDetails();
+            await this.navigateBack();
         }
     }
 
-    private async navigateBackToDetails() {
-        await this.navController.navigateBack('/ads-details');
-    }
-
-    private initItem(): Promise<{}> {
-        return new Promise((resolve) => {
-            // Always refresh the item to be sure to have the last one
-            this.adsService.findAdsItems().then((items: Item[]) => {
-                resolve(Comparator.isEmpty(items) ? null : items[0]);
-            }, (err: any) => {
-                resolve(null);
-            });
-        });
-    }
-
-    private computeExtendDates(): Promise<{}> {
-        return new Promise((resolve) => {
+    private computeExtendDates(): Promise<void> {
+        return new Promise<void>((resolve) => {
             this.itemEndCouldBeExtended = ItemsComparator.isItemExpiringSoon(this.item);
 
             let today: Date = new Date();
@@ -151,9 +138,9 @@ export class AdminAppointmentsPage extends AbstractPage {
         loading.present().then(() => {
             this.doUpdateAppointment().then(() => {
                 this.refreshItemAndGoBack(loading);
-            }, (error: HttpErrorResponse) => {
-                loading.dismiss();
-                this.errorMsg(this.toastController, this.translateService, 'ERRORS.WIZARD.NOT_ADDED');
+            }, async (error: HttpErrorResponse) => {
+                await loading.dismiss();
+                await this.errorMsg(this.toastController, this.translateService, 'ERRORS.WIZARD.NOT_ADDED');
             });
         });
     }
@@ -188,9 +175,9 @@ export class AdminAppointmentsPage extends AbstractPage {
                     this.item = data[0];
                     this.refreshItemAndGoBack(loading);
                 },
-                (err: any) => {
-                    loading.dismiss();
-                    this.errorMsg(this.toastController, this.translateService, 'ERRORS.WIZARD.NOT_ADDED');
+                async (err: any) => {
+                    await loading.dismiss();
+                    await this.errorMsg(this.toastController, this.translateService, 'ERRORS.WIZARD.NOT_ADDED');
                 }
             );
         });
@@ -215,10 +202,10 @@ export class AdminAppointmentsPage extends AbstractPage {
                 this.adsService.setSelectedItem(item);
             }
 
-            this.navController.navigateBack('/ads-details').then(() => {
-                loading.dismiss();
-            }, (err: any) => {
-                loading.dismiss();
+            this.navigateBack().then(async () => {
+                await loading.dismiss();
+            }, async (err: any) => {
+                await loading.dismiss();
             });
         });
     }

@@ -36,7 +36,7 @@ export interface ChatNavParams extends Navigation {
 }
 
 export interface NewAdNavParams {
-    fistChoice: boolean;
+    backToPageUrl: string;
 }
 
 export interface LoginNavParams {
@@ -59,6 +59,10 @@ export interface CandidateDetailsNavParams {
     starredCandidateCallCallback: Function;
 }
 
+export interface AdminAdsNavParams {
+    backToPageUrl: string;
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -70,6 +74,7 @@ export class NavParamsService {
     private loginNavParams: LoginNavParams;
     private applicantSelectionNavParams: ApplicantSelectionNavParams;
     private candidateDetailsNavParams: CandidateDetailsNavParams;
+    private adminAdsNavParams: AdminAdsNavParams;
 
     getItemDetailsNavParams(): Promise<ItemDetailsNavParams> {
         return new Promise<ItemDetailsNavParams>((resolve, reject) => {
@@ -109,7 +114,6 @@ export class NavParamsService {
         this.newAdNavParams = navParams;
     }
 
-
     getLoginNavParams(): Promise<LoginNavParams> {
         return new Promise<LoginNavParams>((resolve) => {
             resolve(this.loginNavParams);
@@ -146,5 +150,15 @@ export class NavParamsService {
 
     setCandidateDetailsNavParams(navParams: CandidateDetailsNavParams) {
         this.candidateDetailsNavParams = navParams;
+    }
+
+    getAdminAdsNavParams(): Promise<AdminAdsNavParams> {
+        return new Promise<AdminAdsNavParams>((resolve) => {
+            resolve(this.adminAdsNavParams);
+        });
+    }
+
+    setAdminAdsNavParams(navParams: AdminAdsNavParams) {
+        this.adminAdsNavParams = navParams;
     }
 }

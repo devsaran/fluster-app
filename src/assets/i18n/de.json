@@ -8,15 +8,16 @@
             "SLIDE3": "Entdecke die <strong>Highlights</strong> der <strong>Umgebung</strong>",
             "SLIDE4": "<strong>Spare Zeit</strong> durch sofortige Besichtigungsanfragen"
         },
-        "LEGAL": "Mit meiner Anmeldung akzeptiere ich die Geschäftsbedingungen"
+        "LEGAL": "Mit meiner Anmeldung akzeptiere ich die",
+        "LEGAL_LINK": "Geschäftsbedingungen"
     },
     "FIRST_CHOICE": {
         "LETS_GO": "Los geht's!",
-        "WHAT_DO_YOU_WANT_TO_DO": "Möchtest du ein neues Zuhause oder bietest du eins an?",
-        "DISCOVER": "Mein neues Zuhause <strong>entdecken</strong>",
-        "ADVERTISE": "Eine WG oder eine Wohnung <strong>inserieren</strong>",
+        "WHAT_DO_YOU_WANT_TO_DO": "Suchst du ein neues Zuhause oder bietest du eins an?",
+        "DISCOVER": "Mein neues Zuhause <strong>finden</strong>",
+        "ADVERTISE": "Ein WG-Zimmer oder eine Wohnung kostenlos <strong>inserieren</strong>",
         "GENDER": {
-            "YOU_ARE": "Eine lezte Angabe",
+            "YOU_ARE": "Eine letzte Angabe",
             "WHY_GENDER": "Um dein Gesuch zu personalisieren",
             "MALE": "Ich bin ein <strong>Mann</strong>",
             "FEMALE": "Ich bin eine <strong>Frau</strong>",
@@ -42,7 +43,8 @@
             "UNDO": "wieder herstellen",
             "EDIT_APPOINTMENTS": "Meine Verfügbarkeiten verwalten",
             "EDIT_ADS": "Mein Inserat verwalten",
-            "CLOSE": "Mein Inserat löschen"
+            "CLOSE": "Mein Inserat löschen",
+            "LIMIT_ADS": "Wer kann mein Inserat sehen?"
         }
     },
     "NEW_AD": {
@@ -111,17 +113,12 @@
             "KIDS_WELCOMED": "Kindern willkommen"
         },
         "STEP_PHOTO": {
-            "ADD_PHOTO": "Foto hinzufügen",
+            "ADD_PHOTO_SHARE": "Foto von deiner WG hinzufügen",
+            "ADD_PHOTO_FLAT": "Foto von deiner Wohnung hinzufügen",
             "FROM_GALLERY": "Aus Album wählen",
             "FROM_CAMERA": "Foto aufnehmen",
-            "AT_LEAST_ONE_PHOTO": "Bitte füge mindestens ein Foto hinzu, um dein Gesuch interessanter zu machen"
-        },
-        "STEP_APPOINTMENT": {
-            "TITLE": "Besichtigung",
-            "SUB_TITLE": "Wann bist du für Besichtigungen verfügbar?",
-            "MORNING": "Vormittag",
-            "AFTERNOON": "Nachmittag",
-            "EVENING": "Abend"
+            "AT_LEAST_ONE_PHOTO_FLAT": "Bitte füge mindestens ein Foto deiner Wohnung hinzu, um dein Gesuch interessanter zu machen",
+            "AT_LEAST_ONE_PHOTO_SHARE": "Bitte füge mindestens ein Foto deiner WG hinzu, um dein Gesuch interessanter zu machen"
         },
         "STEP_LIMITATION": {
             "TITLE": "Bewerber",
@@ -146,10 +143,11 @@
             "SUB_TITLE_REWARD": "Dein Inserat ist jetzt öffentlich und deine Teilnahme an unserem Gewinnspiel* ist registriert",
             "REWARD_LEGAL": "* Information zum Gewinnspiel und Teilnahmebedingungen",
             "DISPLAY": "Inserat ansehen",
-            "SHARE": "Inserat teilen"
+            "SHARE": "Inserat teilen",
+            "APPOINTMENTS": "Trage deine Verfügbarkeit ein"
         },
         "STEP_ATTENDANCE": {
-            "TITLE": "Besuch",
+            "TITLE": "Eine letzte Angabe bevor die Publikation",
             "SUB_TITLE": "Können mehrere Personen zu der gleichen Besichtigung teilnehmen?",
             "SINGLE": "Eine Person pro Besichtigung",
             "MULTIPLE": "Mehrere Personen, offene Türen"
@@ -208,13 +206,13 @@
         "PROPOSAL": "{{who}} bietet dir {{howmany}} mögliche Termine an; wähle eins aus, um die Anfrage anzunehmen",
         "PROPOSAL_SINGLE": "{{who}} bietet dir folgenden Termin an",
         "CONFIRM": "Annehmen",
-        "NO_APPOINTMENTS_FOUND": "Leider passen keine der vorgeschlagenen Termine mit deinem Kalender",
         "RESCHEDULE_IN_PROGRESS": "Du hast {{who}} für einen Besichtigungstermin angefragt",
         "CANCELLED": "Du hast die Besichtigungsanfrage von {{who}} abgelehnt",
         "APPOINTMENT_IN_THE_PAST": "Du hast die Wohnung bereits besichtigt",
         "APPOINTMENT_IN_THE_FUTURE": "Die Besichtigung mit {{who}} ist an folgendem Tag",
         "NEW_REQUEST_TITLE": "{{who}} möchte deine Wohnung besichtigen – möchtest du die Anfrage annehmen?",
         "ACCEPT_REQUEST": "<strong>Annehmen</strong> und Termin wählen",
+        "ACCEPT_REQUEST_CHAT": "<strong>Chat-Anfrage</strong> annehmen, um einen Termin zu vereinbaren",
         "REJECT_REQUEST": "Ablehnen",
         "NO_SELECTED_TIME": "Wähle einen Besichtigungstermin, um die Anfrage anzunehmen",
         "APPOINTMENT_SCHEDULED_FOR": {
@@ -224,7 +222,7 @@
         "ACTION_SHEET": {
             "ACCEPT": "Diese Besichtigungsanfrage annehmen",
             "DECLINE": "Diese Besichtigungsanfrage ablehnen",
-            "ASK_RESCHEDULE": "Neue Besichtigungstermine anfragen",
+            "ASK_RESCHEDULE": "Annehmen und chatten, um einen Termin zu vereinbaren",
             "FOUND_SOMEONE_ELSE": "Sorry, ich habe bereits jemand gefunden",
             "NOT_ENOUGH_DETAILS": "Das Profil enthält nicht genügend Informationen",
             "NO_REASON": "Ich möchte lieber noch andere Interessenten kennenlernen",
@@ -233,7 +231,7 @@
     },
     "USER_PROFILE": {
         "WHAT_ELSE": "Was sonst",
-        "PLACEHOLDER_PHONE": "Meine Telefonnumer",
+        "PLACEHOLDER_PHONE": "Meine Telefonnumer *",
         "PLACEHOLDER_BIO": "Ein paar Worte über mich...",
         "SELECT_SCHOOL": "Ausbildung",
         "SELECT_WORK": "Job",
@@ -425,18 +423,18 @@
             "PARAMETERS": "Einstellungen"
         },
         "BROWSE": {
-            "DISCOVER": "Entdecken",
-            "MY_APPOINTMENTS": "Meine Termine",
+            "DISCOVER": "Suchen",
+            "MY_APPOINTMENTS": "Chat & Termine",
             "MY_BOOKMARKS": "Favoriten",
             "MY_APPLICANTS": "Anfragen",
-            "ADVERTISE": "Inserieren"
+            "ADVERTISE": "Inserat inserieren"
         },
         "AD": {
             "MY_APPOINTMENTS": "Nächste Termine",
-            "APPLICANTS": "Meine Bewerber",
+            "APPLICANTS": "Chat & Bewerber",
             "MY_AD": "Mein Inserat",
             "CANDIDATES": "Finde Mitbewohner",
-            "DISCOVER": "Entdecken"
+            "DISCOVER": "Suchen"
         }
     },
     "CALENDAR": {
@@ -648,7 +646,7 @@
         "VIEWING_WHEN_TEXT_SHARE": "Wann kannst du die WG von {{who}} besichtigen?",
         "VIEWING_WHEN_TEXT_FLAT": "Wann kannst du die Wohnung von {{who}} besichtigen?",
         "SELECTED_COUNT": {
-            "NO_SELECTED_BROWSE": "Wähle eine oder mehrere Zeitfenster aus und erhöhe deine Chancen auf einen Termin",
+            "NO_SELECTED_BROWSE": "{{who}} möchte eine oder mehrere Zeitfenster erhalten, um den Termin zu vereinbaren",
             "SELECTED_COUNT_AVAILABILITY": {
                 "SINGULAR": "Du hast <strong>{{count}} möglichen Termin</strong> ausgewählt",
                 "PLURAL": "Du hast <strong>{{count}} mögliche Termine</strong> ausgewählt"
@@ -656,18 +654,15 @@
             "NO_SPECIAL_AVAILABILITY": "Du bist <strong>flexibel</strong>, was Besichtigungstermine angeht"
         },
         "CONFIRM": "Bestätigen",
-        "SEND": "Senden",
+        "SEND": "Jetzt senden",
         "MISSING_PHONE": {
-            "TITLE": "Deine Telefonnummer",
-            "SUB_TITLE": "Unter dieser Nummer, die Personen mit denen du eine vereinbarte Besichtigung hast, können dich erreichen",
-            "REMARK": "Die Angabe deiner Telefonnummer ist optionnal und nur für Personen sichtbar, mit denen du eine Besichtigungstermin hast",
-            "REMARK_OPTIONAL": "Die Angabe deiner Telefonnummer ist optional und nur für Personen sichtbar, mit denen du eine Besichtigungstermin hast"
+            "REMARK_OPTIONAL": "* Die Angabe deiner Telefonnummer ist optional und nur für Personen sichtbar, mit denen du eine Besichtigungstermin hast"
         },
         "TIPS": {
             "SELECT_MANY_TIMESLOTS": {
-                "BEGIN": "Wähle",
-                "HIGHLIGHT": "mehrere Zeitfenster",
-                "END": "aus und erhöhe deine Chancen auf einen Termin!"
+                "BEGIN": "Füge",
+                "HIGHLIGHT": "deine Verfügbarkeit",
+                "END": "hinzu und erhöhe deine Chancen auf einen Termin!"
             },
             "SELECT_MANY_DAYS": {
                 "BEGIN": "Vielleicht sogar noch",

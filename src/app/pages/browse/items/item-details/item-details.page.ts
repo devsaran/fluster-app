@@ -53,7 +53,7 @@ import {ItemDetailsNavParams, NavParamsService} from '../../../../services/core/
 })
 export class ItemDetailsPage extends AbstractItemsPage {
 
-    @ViewChild('itemDetailsHeader', {read: ElementRef}) detailsHeader: ElementRef;
+    @ViewChild('itemDetailsHeaderToolbar', {read: ElementRef}) detailsHeaderToolbar: ElementRef;
 
     item: Item;
     itemUser: ItemUser;
@@ -116,7 +116,7 @@ export class ItemDetailsPage extends AbstractItemsPage {
             const itemDetailsNavParams: ItemDetailsNavParams = await this.navParamsService.getItemDetailsNavParams();
             const deeplink: boolean = itemDetailsNavParams.deeplink;
             if (deeplink != null && deeplink) {
-                this.enableMenu(this.menuController, true, false);
+                await this.enableMenu(this.menuController, true, false);
                 this.srcDeeplink = true;
             }
 
@@ -213,8 +213,8 @@ export class ItemDetailsPage extends AbstractItemsPage {
             } else {
                 await this.removeItemAndNavigate(true);
             }
-        }, (response: HttpErrorResponse) => {
-            this.errorMsg(this.toastController, this.translateService, 'ERRORS.ITEMS.ACTION_ERROR');
+        }, async (response: HttpErrorResponse) => {
+            await this.errorMsg(this.toastController, this.translateService, 'ERRORS.ITEMS.ACTION_ERROR');
             this.actionJobIsDone();
         });
     }
@@ -238,7 +238,7 @@ export class ItemDetailsPage extends AbstractItemsPage {
             }
         });
 
-        modal.present();
+        await modal.present();
     }
 
     private async removeItemAndNavigate(removeItem: boolean) {
@@ -427,8 +427,8 @@ export class ItemDetailsPage extends AbstractItemsPage {
     private createComplaint(reason: string) {
         this.complaintService.itemComplaint(this.item, reason).then((result: boolean) => {
             // Do nothing
-        }, (response: HttpErrorResponse) => {
-            this.errorMsg(this.toastController, this.translateService, 'ERRORS.ITEM_DETAILS.COMPLAINT');
+        }, async (response: HttpErrorResponse) => {
+            await this.errorMsg(this.toastController, this.translateService, 'ERRORS.ITEM_DETAILS.COMPLAINT');
         });
     }
 

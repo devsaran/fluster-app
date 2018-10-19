@@ -76,8 +76,8 @@ export class ApplicantsPage extends AbstractAdsPage {
                 private userProfileService: UserProfileService,
                 private userSessionService: UserSessionService,
                 private storageService: StorageService,
-                private navParamsService: NavParamsService) {
-        super(platform, loadingController, navController, toastController, translateService, googleAnalyticsNativeService, adsService, newItemService, localFilesService, candidatesService);
+                protected navParamsService: NavParamsService) {
+        super(platform, loadingController, navController, toastController, translateService, googleAnalyticsNativeService, adsService, newItemService, localFilesService, candidatesService, navParamsService);
 
         this.gaTrackView(this.platform, this.googleAnalyticsNativeService, this.RESOURCES.GOOGLE.ANALYTICS.TRACKER.VIEW.ADS.APPLICANTS);
 
@@ -86,17 +86,17 @@ export class ApplicantsPage extends AbstractAdsPage {
         this.initialized = false;
     }
 
-    ionViewWillEnter() {
+    async ionViewWillEnter() {
         this.init();
 
         this.hideSplashScreen(this.platform, this.splashScreen, this.loginService);
 
-        this.enableMenu(this.menuController, false, true);
+        await this.enableMenu(this.menuController, false, true);
     }
 
-    ionViewDidEnter() {
+    async ionViewDidEnter() {
         const user: User = this.userSessionService.getUser();
-        this.saveUserIfNeeded(this.toastController, this.loadingController, this.translateService, this.userProfileService, this.userSessionService, user);
+        await this.saveUserIfNeeded(this.toastController, this.loadingController, this.translateService, this.userProfileService, this.userSessionService, user);
     }
 
     ionViewWillLeave() {

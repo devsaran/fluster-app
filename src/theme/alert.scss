@@ -1,0 +1,11 @@
+ion-alert[class*="sc-ion-alert"] {
+  font-weight: $font-weight-normal;
+
+  .alert-title {
+    font-weight: $font-weight-normal;
+  }
+
+  button.activated[class*="sc-ion-alert"] {
+    background-color: inherit;
+  }
+}

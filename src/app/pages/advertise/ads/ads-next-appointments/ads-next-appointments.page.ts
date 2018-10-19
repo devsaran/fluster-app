@@ -67,8 +67,8 @@ export class AdsNextAppointmentsPage extends AbstractAdsPage {
                 private storageService: StorageService,
                 private notificationWatcherService: NotificationWatcherService,
                 protected candidatesService: CandidatesService,
-                private navParamsService: NavParamsService) {
-        super(platform, loadingController, navController, toastController, translateService, googleAnalyticsNativeService, adsService, newItemService, localFilesService, candidatesService);
+                protected navParamsService: NavParamsService) {
+        super(platform, loadingController, navController, toastController, translateService, googleAnalyticsNativeService, adsService, newItemService, localFilesService, candidatesService, navParamsService);
 
         this.gaTrackView(this.platform, this.googleAnalyticsNativeService, this.RESOURCES.GOOGLE.ANALYTICS.TRACKER.VIEW.ADS.ADS_NEXT_APPOINTMENTS);
 
@@ -76,12 +76,12 @@ export class AdsNextAppointmentsPage extends AbstractAdsPage {
         this.lastPageReached = false;
     }
 
-    ionViewWillEnter() {
+    async ionViewWillEnter() {
         this.initAdsItems();
 
         this.hideSplashScreen(this.platform, this.splashScreen, this.loginService);
 
-        this.enableMenu(this.menuController, false, true);
+        await this.enableMenu(this.menuController, false, true);
     }
 
     ionViewWillLeave() {

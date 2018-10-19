@@ -170,7 +170,9 @@ export abstract class AbstractDeepLinkingNavigationPage extends AbstractPage {
         }
         //endRemoveIf(production)
 
-        this.errorMsg(this.toastController, this.translateService, 'ERRORS.LOGIN.LOGIN_ERROR');
+        this.errorMsg(this.toastController, this.translateService, 'ERRORS.LOGIN.LOGIN_ERROR').then(() => {
+            // Do nothing
+        });
     }
 
     private fbLoginSuccess = (response: any) => {
@@ -222,7 +224,7 @@ export abstract class AbstractDeepLinkingNavigationPage extends AbstractPage {
             // There was a restart on Android because of low memory
             this.newItemService.recover().then(() => {
                 this.navParamsService.setNewAdNavParams({
-                    fistChoice: true
+                    backToPageUrl: '/first-choice'
                 });
 
                 this.navController.navigateRoot('/new-ad').then(() => {
@@ -353,7 +355,9 @@ export abstract class AbstractDeepLinkingNavigationPage extends AbstractPage {
     }
 
     private errorAndNavigateToItems() {
-        this.errorMsg(this.toastController, this.translateService, 'ERRORS.DEEP_LINKING.NOT_FOUND');
+        this.errorMsg(this.toastController, this.translateService, 'ERRORS.DEEP_LINKING.NOT_FOUND').then(() => {
+            // Do nothing
+        });
 
         this.hideSplashScreen(this.platform, this.splashScreen, this.loginService);
 

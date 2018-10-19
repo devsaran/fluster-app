@@ -73,13 +73,11 @@ export class FirstChoicePage extends AbstractPage {
 
     ionViewWillEnter() {
         this.hideSplashScreen(this.platform, this.splashScreen, this.loginService);
-
-        this.user = this.userSessionService.getUser();
-
-        this.initDefaultUserLangue();
     }
 
-    initDefaultUserLangue() {
+    private initUser() {
+        this.user = this.userSessionService.getUser();
+
         if (this.user.description == null) {
             this.user.description = new UserDescription();
         }
@@ -102,6 +100,8 @@ export class FirstChoicePage extends AbstractPage {
         this.gaTrackEvent(this.platform, this.googleAnalyticsNativeService, this.RESOURCES.GOOGLE.ANALYTICS.TRACKER.EVENT.CATEGORY.FIRST_CHOICE, this.RESOURCES.GOOGLE.ANALYTICS.TRACKER.EVENT.ACTION.FIRST_CHOICE.BROWSE);
 
         this.pickBrowse();
+
+        this.initUser();
 
         if (!this.isUserGoogle() || this.isGenderAlreadySet()) {
             // In case the gender is already set or in case of Facebook user, we don't want to ask for the gender here again
@@ -162,8 +162,8 @@ export class FirstChoicePage extends AbstractPage {
                 });
             } else {
                 this.currencyService.initDefaultCurrency(this.user.userParams.address.country).then(() => {
-                    this.navController.navigateRoot('/items').then(() => {
-                        // Do nothing
+                    this.navController.navigateRoot('/items').then(async () => {
+                        await this.loading.dismiss();
                     });
                 });
             }
@@ -212,6 +212,9 @@ export class FirstChoicePage extends AbstractPage {
         this.pickAd();
 
         this.displayLoading().then(() => {
+
+            this.initUser();
+
             this.saveUserBrowsing(false);
 
             if (Comparator.equals(this.user.status, this.RESOURCES.USER.STATUS.INITIALIZED)) {
@@ -220,13 +223,13 @@ export class FirstChoicePage extends AbstractPage {
 
                 // We go to the wizard
                 this.navParamsService.setNewAdNavParams({
-                    fistChoice: true
+                    backToPageUrl: '/first-choice'
                 });
                 this.activateUserAndNavigate(this.loading, this.user, '/new-ad');
             } else {
                 // We go to the dashboard
-                this.navController.navigateRoot('/ads-next-appointments').then(() => {
-                    // Do nothing
+                this.navController.navigateRoot('/ads-next-appointments').then(async () => {
+                    await this.loading.dismiss();
                 });
             }
         });
@@ -244,18 +247,18 @@ export class FirstChoicePage extends AbstractPage {
 
         this.userProfileService.saveIfModified(user).then((data: User) => {
             this.currencyService.initDefaultCurrency(user.userParams.address.country).then(() => {
-                this.navController.navigateRoot(page).then(() => {
+                this.navController.navigateRoot(page).then(async () => {
                     if (loading) {
-                        loading.dismiss();
+                        await loading.dismiss();
                     }
                 });
             });
-        }, (response: HttpErrorResponse) => {
+        }, async (response: HttpErrorResponse) => {
             if (loading) {
-                loading.dismiss();
+                await loading.dismiss();
             }
 
-            this.errorMsg(this.toastController, this.translateService, 'ERRORS.USER.SAVE_ERROR');
+            await this.errorMsg(this.toastController, this.translateService, 'ERRORS.USER.SAVE_ERROR');
         });
     }
 

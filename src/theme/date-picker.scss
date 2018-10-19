@@ -5,7 +5,15 @@ div.date-picker-scroller {
 
         > div {
             &.has-appointment {
-                color: $fluster-peach3;
+                p {
+                    font-weight: $font-weight-normal;
+                }
+            }
+
+            &.has-appointment:not(.selected-date) {
+                p {
+                    color: $fluster-peach3;
+                }
             }
         }
 
@@ -28,6 +36,7 @@ div.date-picker-scroller {
                     display: block;
                 }
             }
+
 
             span.triangle {
                 display: none;
@@ -134,10 +143,6 @@ ion-content[role="ad"] {
         div.date-picker {
             > div:not(.selected-date) {
                 background-color: $fluster-midnight-blue;
-
-                &:not(.has-appointment) {
-                    color: $fluster-grey-blue;
-                }
             }
         }
     }

@@ -19,17 +19,17 @@
   <div class="big-screen-content">
     <ion-card id="app-params-card" *ngIf="user != null" no-shadow no-margin padding>
       <ion-list>
-        <ion-item>
+        <ion-item class="item-toggle">
           <ion-label text-wrap>{{'APP_PARAMS.EXPORT_TO_CALENDAR' | translate}}</ion-label>
           <ion-toggle checked="user.userParams.appSettings.calendarExport" [(ngModel)]="user.userParams.appSettings.calendarExport"></ion-toggle>
         </ion-item>
 
-        <ion-item>
+        <ion-item class="item-toggle">
           <ion-label text-wrap>{{'APP_PARAMS.NOTIFICATIONS' | translate}}</ion-label>
           <ion-toggle checked="user.userParams.appSettings.pushNotifications" [(ngModel)]="user.userParams.appSettings.pushNotifications"></ion-toggle>
         </ion-item>
 
-        <ion-item *ngIf="user.userParams.appSettings.browsing">
+        <ion-item *ngIf="user.userParams.appSettings.browsing" class="item-toggle">
           <ion-label text-wrap>{{'APP_PARAMS.ALLOW_SUPERSTARS' | translate}}</ion-label>
           <ion-toggle checked="user.userParams.appSettings.allowSuperstars" [(ngModel)]="user.userParams.appSettings.allowSuperstars"></ion-toggle>
         </ion-item>
@@ -37,7 +37,7 @@
     </ion-card>
 
     <ion-card id="content" no-shadow>
-      <ion-item tappable (click)="openGithub()">
+      <ion-item button detail="false" (click)="openGithub()">
         <ion-label text-wrap text-center>Fluster is <strong>open source</strong>, released under the GNU Affero General Public License</ion-label>
       </ion-item>
 
@@ -76,7 +76,7 @@
 
     <ion-card no-shadow padding-top id="legal">
       <ion-item>
-        <a (click)="openTermsOfuser()">
+        <a (click)="openTermsOfuser()" no-margin>
           <ion-label text-wrap text-center>{{'APP_PARAMS.LEGAL' | translate}}</ion-label>
         </a>
       </ion-item>

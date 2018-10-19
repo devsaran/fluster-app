@@ -1,10 +1,6 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, HostListener, ViewChild} from '@angular/core';
 import {HttpErrorResponse} from '@angular/common/http';
-import {LoadingController, ModalController, NavParams, Platform, Slides, ToastController} from '@ionic/angular';
-
-import {Subscription} from 'rxjs';
-
-import {TranslateService} from '@ngx-translate/core';
+import {LoadingController, ModalController, NavParams, Platform, Slides} from '@ionic/angular';
 
 // Modal
 import {AbstractModal} from '../../core/abstract-modal';
@@ -20,7 +16,6 @@ import {Comparator} from '../../../services/core/utils/utils';
 // Services
 import {UserSessionService} from '../../../services/core/user/user-session-service';
 import {GoogleAnalyticsNativeService} from '../../../services/native/analytics/google-analytics-native-service';
-import {UserProfileService} from '../../../services/core/user/user-profile-service';
 import {UserInterestsService} from '../../../services/core/user/user-interetsts-service';
 
 @Component({
@@ -29,8 +24,6 @@ import {UserInterestsService} from '../../../services/core/user/user-interetsts-
     selector: 'app-select-interest'
 })
 export class SelectInterestModal extends AbstractModal {
-
-    private customBackActionSubscription: Subscription;
 
     @ViewChild('interestSlider') slider: Slides;
 
@@ -51,18 +44,13 @@ export class SelectInterestModal extends AbstractModal {
     constructor(private platform: Platform,
                 private navParams: NavParams,
                 private modalController: ModalController,
-                private toastController: ToastController,
                 private loadingController: LoadingController,
-                private translateService: TranslateService,
                 private userSessionService: UserSessionService,
-                private userProfileService: UserProfileService,
                 private googleAnalyticsNativeService: GoogleAnalyticsNativeService,
                 private userInterestsService: UserInterestsService) {
         super();
 
         this.gaTrackEvent(this.platform, this.googleAnalyticsNativeService, this.RESOURCES.GOOGLE.ANALYTICS.TRACKER.EVENT.CATEGORY.MODAL, this.RESOURCES.GOOGLE.ANALYTICS.TRACKER.EVENT.ACTION.PARAMS.SELECT_INTERESTS);
-
-        this.overrideHardwareBackAction();
     }
 
     ionViewWillEnter() {
@@ -82,10 +70,6 @@ export class SelectInterestModal extends AbstractModal {
         this.initTravelTime();
     }
 
-    ionViewDidLeave() {
-        this.saveUserIfNeeded(this.toastController, this.loadingController, this.translateService, this.userProfileService, this.userSessionService, this.user);
-    }
-
     private initTravelTime() {
         this.travelTime = Comparator.isEmpty(this.interest) || this.interest.maxTravelTime == null ? this.RESOURCES.USER.INTEREST.TRAVEL_TIME.MAX : this.interest.maxTravelTime;
     }
@@ -102,7 +86,7 @@ export class SelectInterestModal extends AbstractModal {
 
     close() {
         this.modalController.dismiss().then(() => {
-            this.unregisterBackAction();
+            // Do nothing
         });
     }
 
@@ -125,7 +109,7 @@ export class SelectInterestModal extends AbstractModal {
         }
 
         this.modalController.dismiss(this.interest).then(() => {
-            this.unregisterBackAction();
+            // Do nothing
         });
     }
 
@@ -236,18 +220,16 @@ export class SelectInterestModal extends AbstractModal {
         return !Comparator.isStringEmpty(this.interest.addressName);
     }
 
-    private overrideHardwareBackAction() {
-        this.platform.ready().then(() => {
-            this.customBackActionSubscription = this.platform.backButton.subscribe(async () => {
+    @HostListener('document:ionBackButton', ['$event'])
+    private overrideHardwareBackAction($event: any) {
+        $event.detail.register(100, async () => {
+            const isFirstSlide: boolean = await this.slider.isBeginning();
 
-                const isFirstSlide: boolean = await this.slider.isBeginning();
-
-                if (!isFirstSlide) {
-                    this.backToPreviousSlide();
-                } else {
-                    this.close();
-                }
-            });
+            if (!isFirstSlide) {
+                this.backToPreviousSlide();
+            } else {
+                this.close();
+            }
         });
     }
 
@@ -358,7 +340,7 @@ export class SelectInterestModal extends AbstractModal {
         }
 
         this.modalController.dismiss(this.interest).then(() => {
-            this.unregisterBackAction();
+            // Do nothing
         });
     }
 
@@ -366,12 +348,6 @@ export class SelectInterestModal extends AbstractModal {
         if (this.doSave) {
             // Will allow us to detect the modification to update the user
             this.userSessionService.setUserToSave(this.user);
-        }
-    }
-
-    private unregisterBackAction() {
-        if (this.customBackActionSubscription) {
-            this.customBackActionSubscription.unsubscribe();
         }
     }
 

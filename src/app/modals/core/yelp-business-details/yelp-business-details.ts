@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {HttpErrorResponse} from '@angular/common/http';
 
 // Model
@@ -76,8 +76,8 @@ export class YelpBusinessDetailsModal extends AbstractModal {
         }
     }
 
-    close() {
-        this.modalController.dismiss();
+    async close() {
+        await this.modalController.dismiss();
     }
 
     hasPhone(): boolean {

@@ -16,7 +16,7 @@ import {ItemsComparator} from '../../../../services/core/utils/items-utils';
 
 // Pages
 import {AbstractNewAdComponent} from '../abstract-new-ad';
-import {TargetedUsersComponent} from '../targeted-users/targeted-users';
+import {TargetedUsersComponent} from '../../targeted-users/targeted-users';
 
 // Service
 import {NewItemService} from '../../../../services/advertise/new-item-service';
@@ -146,7 +146,7 @@ export class NewAdStepAvailabilityComponent extends AbstractNewAdComponent {
                     const result: boolean = (this.newItemService.isEdit() ? index === 2 : index === 3);
                     resolve(result);
                 } catch (err) {
-                    return false;
+                    resolve(false);
                 }
             }
         });

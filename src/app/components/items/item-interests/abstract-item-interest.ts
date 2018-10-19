@@ -30,15 +30,15 @@ export abstract class AbstractItemInterestComponent extends AbstractPage {
         super();
     }
 
-    editInterestAndOpenModal($event: any) {
+    async editInterestAndOpenModal($event: any) {
         // Prevent calling (don't call) parent click
         $event.preventDefault();
         $event.stopPropagation();
 
         if (!this.subscriptionService.couldAddInterest(this.index)) {
-            this.displayProductSubscriptionModal();
+            await this.displayProductSubscriptionModal();
         } else {
-            this.doEditInterestAndOpenModal();
+            await this.doEditInterestAndOpenModal();
         }
     }
 
@@ -73,8 +73,8 @@ export abstract class AbstractItemInterestComponent extends AbstractPage {
         });
 
         modal.onDidDismiss().then((detail: OverlayEventDetail) => {
-            if (!Comparator.isEmpty(detail) && !Comparator.isEmpty(detail.data) && !Comparator.isEmpty(detail.data.updateInterest)) {
-                this.notifiyUpdated.emit(detail.data.updateInterest);
+            if (!Comparator.isEmpty(detail) && !Comparator.isEmpty(detail.data)) {
+                this.notifiyUpdated.emit(detail.data);
             }
         });
 

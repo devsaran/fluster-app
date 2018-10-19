@@ -47,7 +47,6 @@ import {NewItemService} from './services/advertise/new-item-service';
 import {FacebookNativeService} from './services/native/facebook/facebook-native-service';
 import {GoogleNativeService} from './services/native/google/google-native-service';
 import {NavParamsService} from './services/core/navigation/nav-params-service';
-import {AdsService} from './services/advertise/ads-service';
 import {AccessTokenService} from './services/core/user/access-token-service';
 
 import 'hammerjs';
@@ -107,7 +106,6 @@ export class AppComponent extends AbstractDeepLinkingNavigationPage implements O
                 protected facebookNativeService: FacebookNativeService,
                 private googleNativeService: GoogleNativeService,
                 protected navParamsService: NavParamsService,
-                private adsService: AdsService,
                 private accessTokenService: AccessTokenService) {
 
         super(navController, platform, toastController, splashScreen, translateService, userSessionService, itemsService, itemUsersService, deepLinkingService, loginService, likeService, appointmentService, googleAnalyticsNativeService, authenticationService, currencyService, notificationWatcherService, chatWatcherService, newItemService, facebookNativeService, navParamsService);
@@ -228,12 +226,13 @@ export class AppComponent extends AbstractDeepLinkingNavigationPage implements O
     initializeApp() {
         this.platform.ready().then(() => {
             if (this.ENV_CORDOVA && this.platform.is('cordova')) {
-                this.statusBar.styleDefault();
-
-                // The first bar on the top when th time etc. are displayed. Otherwise theme-color of index.html will apply.
+                // The first bar on the top when the time etc. are displayed. Otherwise theme-color of index.html will apply.
                 const isAndroid: boolean = this.platform.is('android');
                 if (isAndroid) {
+                    this.statusBar.styleDefault();
                     this.statusBar.backgroundColorByHexString('#000000');
+                } else {
+                    this.statusBar.styleLightContent();
                 }
             }
         });
@@ -319,74 +318,57 @@ export class AppComponent extends AbstractDeepLinkingNavigationPage implements O
         this.navController.navigateRoot(url);
     }
 
-    navigateToBrowse() {
+    async navigateToBrowse() {
         if (this.navigateSideInProgress) {
             return;
         }
 
         this.navigateSideInProgress = true;
 
-        this.navigateSide(true, '/items');
+        await this.navigateSide(true, '/items');
     }
 
-    navigateToAds() {
+    async navigateToAds() {
         if (this.navigateSideInProgress) {
             return;
         }
 
         this.navigateSideInProgress = true;
 
-        // We try to see if user is actually having an open ads
-        // First we try to see if we've got one in the provider (ad side -> browse side -> ad side)
-        // Then we try to load it from the backend to redirect directly to the wizard
-        if (!Comparator.isEmpty(this.adsService.getSelectedItem())) {
-            this.navigateSide(false, '/ads-next-appointments');
-        } else {
-            this.adsService.findAdsItems().then((items: Item[]) => {
-
-                if (Comparator.hasElements(items)) {
-                    this.navigateSide(false, '/ads-next-appointments');
-                } else {
-                    this.newItemService.init();
-
-                    this.navParamsService.setNewAdNavParams({
-                        fistChoice: true
-                    });
-                    this.navigateSide(false, '/new-ad');
-                }
-            }, (errorResponse: HttpErrorResponse) => {
-                this.navigateSide(false, '/ads-next-appointments');
-            });
-        }
+        await this.navigateSide(false, '/ads-next-appointments');
     }
 
-    private navigateSide(browse: boolean, page: string) {
+    private async navigateSide(browse: boolean, page: string) {
         this.user.userParams.appSettings.browsing = browse;
         this.user.updatedAt = new Date();
         this.userSessionService.setUserToSave(this.user);
 
-        this.saveUser().then(() => {
-            this.navController.navigateRoot(page).then(() => {
-                this.menu.close().then((result: boolean) => {
-                    this.navigateSideInProgress = false;
-                });
-            });
+        const loading: HTMLIonLoadingElement = await this.loadingController.create({});
+
+        await loading.present();
+
+        this.saveUser().then(async () => {
+            this.navigateSideInProgress = false;
+
+            await this.navController.navigateRoot(page);
+            await this.menu.close();
+            await loading.dismiss();
+        }, async (response: HttpErrorResponse) => {
+            await loading.dismiss();
+            await this.errorMsg(this.toastController, this.translateService, 'ERRORS.USER.SAVE_ERROR');
         });
     }
 
-    private async saveUser() {
-        const loading: HTMLIonLoadingElement = await this.loadingController.create({});
-
-        loading.present().then(() => {
-            this.userProfileService.saveIfModified(this.user).then((updatedUser: User) => {
+    private async saveUser(): Promise<void> {
+        return new Promise<void>(async (resolve, reject) => {
+            this.userProfileService.saveIfModified(this.user).then(async (updatedUser: User) => {
                 if (!Comparator.isEmpty(updatedUser)) {
                     this.user = updatedUser;
                 }
 
-                loading.dismiss();
-            }, (response: HttpErrorResponse) => {
-                loading.dismiss();
-                this.errorMsg(this.toastController, this.translateService, 'ERRORS.USER.SAVE_ERROR');
+                resolve();
+            }, async (response: HttpErrorResponse) => {
+                reject(response);
             });
         });
     }

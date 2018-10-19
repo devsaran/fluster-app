@@ -1,4 +1,4 @@
-ion-header ion-toolbar {
+ion-header ion-toolbar, ion-header ion-toolbar.sc-ion-toolbar-md-h {
 
   @include fluster-linear-gradient-variable(to right, $fluster-peach1, $fluster-peach3);
   --ion-toolbar-text-color: white;
@@ -11,10 +11,15 @@ ion-header ion-toolbar {
 
   ion-button {
     --color: white;
+    --ion-color-primary: white;
+
+    &.activated {
+      --opacity: 0.6;
+    }
   }
 
   ion-back-button[class*="sc-ion-back-button"] {
-    --ion-color-base: white;
+    --color: white;
   }
 
   ion-buttons[class*="sc-ion-buttons-ios"] {

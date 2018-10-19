@@ -78,8 +78,8 @@ export class UserProfilePage extends AbstractPage {
         }
     }
 
-    ionViewDidLeave() {
-        this.saveUserIfNeeded(this.toastController, this.loadingController, this.translateService, this.userProfileService, this.userSessionService, this.user);
+    async ionViewDidLeave() {
+        await this.saveUserIfNeeded(this.toastController, this.loadingController, this.translateService, this.userProfileService, this.userSessionService, this.user);
 
         this.saveProfileCompletedOnce();
     }
@@ -144,7 +144,7 @@ export class UserProfilePage extends AbstractPage {
             this.initLanguages();
         });
 
-        modal.present();
+        await modal.present();
     }
 
     hasLikes(): boolean {
@@ -181,7 +181,7 @@ export class UserProfilePage extends AbstractPage {
             }
         });
 
-        modal.present();
+        await modal.present();
     }
 
     updateSpotify(userSpotify: UserDescriptionSpotify) {
@@ -198,16 +198,16 @@ export class UserProfilePage extends AbstractPage {
         const loading: HTMLIonLoadingElement = await this.loadingController.create({});
 
         loading.present().then(() => {
-            this.userProfileService.saveIfModified(this.user).then((updatedUser: User) => {
+            this.userProfileService.saveIfModified(this.user).then(async (updatedUser: User) => {
                 if (!Comparator.isEmpty(updatedUser)) {
                     this.user = updatedUser;
                     this.setOriginalUser();
                 }
 
-                loading.dismiss();
-            }, (response: HttpErrorResponse) => {
-                loading.dismiss();
-                this.errorMsg(this.toastController, this.translateService, 'ERRORS.USER.SAVE_ERROR');
+                await loading.dismiss();
+            }, async (response: HttpErrorResponse) => {
+                await loading.dismiss();
+                await this.errorMsg(this.toastController, this.translateService, 'ERRORS.USER.SAVE_ERROR');
             });
         });
     }

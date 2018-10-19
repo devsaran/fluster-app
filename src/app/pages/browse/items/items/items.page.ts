@@ -152,10 +152,10 @@ export class ItemsPage extends AbstractItemsPage implements OnInit, OnDestroy {
         });
     }
 
-    ionViewWillEnter() {
+    async ionViewWillEnter() {
         this.hideSplashScreen(this.platform, this.splashScreen, this.loginService);
 
-        this.enableMenu(this.menuController, true, false);
+        await this.enableMenu(this.menuController, true, false);
 
         this.user = this.userSessionService.getUser();
 
@@ -320,8 +320,8 @@ export class ItemsPage extends AbstractItemsPage implements OnInit, OnDestroy {
             } else {
                 this.goToNextItem(false);
             }
-        }, (response: HttpErrorResponse) => {
-            this.errorMsg(this.toastController, this.translateService, 'ERRORS.ITEMS.ACTION_ERROR');
+        }, async (response: HttpErrorResponse) => {
+            await this.errorMsg(this.toastController, this.translateService, 'ERRORS.ITEMS.ACTION_ERROR');
         });
     }
 
@@ -361,7 +361,7 @@ export class ItemsPage extends AbstractItemsPage implements OnInit, OnDestroy {
                 this.actionJobIsDone();
             });
 
-            modal.present();
+            await modal.present();
         }
     }
 
@@ -417,7 +417,7 @@ export class ItemsPage extends AbstractItemsPage implements OnInit, OnDestroy {
 
     private doLikeCallback = () => {
         this.doLike();
-    }
+    };
 
     goToNextItem(like: boolean) {
         if (this.hasItems()) {
@@ -521,18 +521,19 @@ export class ItemsPage extends AbstractItemsPage implements OnInit, OnDestroy {
                             {
                                 text: data[2],
                                 handler: () => {
+                                    this.zone.run(() => {
+                                        if (like) {
+                                            this.likeInfoMsg = true;
+                                        } else {
+                                            this.dislikeInfoMsg = true;
+                                        }
 
-                                    if (like) {
-                                        this.likeInfoMsg = true;
-                                    } else {
-                                        this.dislikeInfoMsg = true;
-                                    }
+                                        const promise = like ? this.storageService.saveLikeInfoSeenOnce(true) : this.storageService.saveDislikeInfoSeenOnce(true);
 
-                                    const promise = like ? this.storageService.saveLikeInfoSeenOnce(true) : this.storageService.saveDislikeInfoSeenOnce(true);
+                                        promise.then(() => {
 
-                                    promise.then(() => {
-
-                                        this.likeDislike(like);
+                                            this.likeDislike(like);
+                                        });
                                     });
                                 }
                             }
@@ -624,7 +625,7 @@ export class ItemsPage extends AbstractItemsPage implements OnInit, OnDestroy {
             this.displayInfoCompleteProfile();
         });
 
-        modal.present();
+        await modal.present();
     }
 
     private redoStack() {
@@ -708,7 +709,7 @@ export class ItemsPage extends AbstractItemsPage implements OnInit, OnDestroy {
                 }
             });
 
-            modal.present();
+            await modal.present();
         }
     }
 
@@ -868,21 +869,18 @@ export class ItemsPage extends AbstractItemsPage implements OnInit, OnDestroy {
         });
     }
 
-    updateBirthday($event: any) {
-        if (Comparator.isEmpty($event) || Comparator.isEmpty(this.user) || Comparator.isEmpty(this.user.facebook)) {
+    async updateBirthday($event: any) {
+        if (Comparator.isEmpty($event) || Comparator.isEmpty($event.detail) || Comparator.isStringEmpty($event.detail.value) ||
+            Comparator.isEmpty(this.user) || Comparator.isEmpty(this.user.facebook)) {
             return;
         }
 
         this.gaTrackEvent(this.platform, this.googleAnalyticsNativeService, this.RESOURCES.GOOGLE.ANALYTICS.TRACKER.EVENT.CATEGORY.ITEMS, this.RESOURCES.GOOGLE.ANALYTICS.TRACKER.EVENT.ACTION.ITEMS.UPDATE_BIRTHDAY);
 
-        const day: number = $event.detail.value.day.value;
-        const month: number = $event.detail.value.month.value;
-        const year: number = $event.detail.value.year.value;
-
-        this.user.facebook.birthday = moment().year(year).month(month - 1).date(day).toDate();
+        this.user.facebook.birthday = moment($event.detail.value).toDate();
 
         this.userSessionService.setUserToSave(this.user);
-        this.saveUserIfNeeded(this.toastController, this.loadingController, this.translateService, this.userProfileService, this.userSessionService, this.user);
+        await this.saveUserIfNeeded(this.toastController, this.loadingController, this.translateService, this.userProfileService, this.userSessionService, this.user);
 
         this.reset();
         this.findItems(false);

@@ -15,11 +15,11 @@ import {TranslateService} from '@ngx-translate/core';
 
 import {SocialSharing} from '@ionic-native/social-sharing/ngx';
 
-// Model
-import {Item} from '../../../../services/model/item/item';
-
 // Pages
 import {AbstractAdsPage} from '../abstract-ads';
+
+// Model
+import {Item} from '../../../../services/model/item/item';
 
 // Resources and utils
 import {Comparator} from '../../../../services/core/utils/utils';
@@ -32,6 +32,7 @@ import {LocalFilesService} from '../../../../services/native/localfiles/local-fi
 import {CurrencyService} from '../../../../services/core/currency/currency-service';
 import {NotificationWatcherService} from '../../../../services/core/notification/notification-watcher-service';
 import {CandidatesService} from '../../../../services/advertise/candidates-service';
+import {NavParamsService} from '../../../../services/core/navigation/nav-params-service';
 
 @Component({
     selector: 'app-ads-details',
@@ -40,7 +41,7 @@ import {CandidatesService} from '../../../../services/advertise/candidates-servi
 })
 export class AdsDetailsPage extends AbstractAdsPage {
 
-    @ViewChild('adsDetailsHeader', {read: ElementRef}) detailsHeader: ElementRef;
+    @ViewChild('adsDetailsHeaderToolbar', {read: ElementRef}) detailsHeaderToolbar: ElementRef;
 
     item: Item;
 
@@ -60,14 +61,18 @@ export class AdsDetailsPage extends AbstractAdsPage {
                 private actionSheetController: ActionSheetController,
                 private currencyService: CurrencyService,
                 private notificationWatcherService: NotificationWatcherService,
+                protected navParamsService: NavParamsService,
                 protected candidatesService: CandidatesService) {
-        super(platform, loadingController, navController, toastController, translateService, googleAnalyticsNativeService, adsService, newItemService, localFilesService, candidatesService);
+        super(platform, loadingController, navController, toastController, translateService, googleAnalyticsNativeService, adsService, newItemService, localFilesService, candidatesService, navParamsService);
 
         this.gaTrackView(this.platform, this.googleAnalyticsNativeService, this.RESOURCES.GOOGLE.ANALYTICS.TRACKER.VIEW.ADS.ADS_DETAILS);
     }
 
-    ionViewWillEnter() {
-        this.enableMenu(this.menuController, false, true);
+    async ionViewWillEnter() {
+        await this.enableMenu(this.menuController, false, true);
+
+        // Default is /ads-details
+        this.navParamsService.setAdminAdsNavParams(null);
 
         this.initAdsItems();
     }
@@ -97,7 +102,7 @@ export class AdsDetailsPage extends AbstractAdsPage {
         this.showPopupPageChange().then((loading: HTMLIonLoadingElement) => {
             this.newItemService.load(this.item, this.item.appointment);
 
-            this.navigateToWizard(loading);
+            this.navigateToWizard(loading, '/ads-details');
         });
     }
 
@@ -105,8 +110,8 @@ export class AdsDetailsPage extends AbstractAdsPage {
         this.navController.navigateForward('/ads-close');
     }
 
-    adminAppointments() {
-        this.navController.navigateForward('/admin-appointments');
+    async adminAppointments() {
+        await this.navController.navigateForward('/admin-appointments');
     }
 
     presentActionSheet(ev) {
@@ -117,6 +122,7 @@ export class AdsDetailsPage extends AbstractAdsPage {
         promises.push(this.translateService.get('ADS.ACTIONS.CLOSE'));
         promises.push(this.translateService.get('ITEM_DETAILS.POPOVER.SHARE'));
         promises.push(this.translateService.get('CORE.CANCEL'));
+        promises.push(this.translateService.get('ADS.ACTIONS.LIMIT_ADS'));
 
         forkJoin(promises).subscribe(
             async (data: string[]) => {
@@ -126,8 +132,15 @@ export class AdsDetailsPage extends AbstractAdsPage {
                     buttons.push({
                         text: data[0],
                         role: 'destructive',
-                        handler: () => {
-                            this.adminAppointments();
+                        handler: async () => {
+                            await this.adminAppointments();
+                        }
+                    });
+
+                    buttons.push({
+                        text: data[5],
+                        handler: async () => {
+                            await this.navigateToAdminLimitation();
                         }
                     });
 

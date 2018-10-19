@@ -32,6 +32,7 @@ import {UserSessionService} from '../services/core/user/user-session-service';
 export abstract class AbstractPage {
 
     slideOptsProgressbar: SwiperOptions = {
+        zoom: false,
         pagination: {
             el: '.swiper-pagination',
             type: 'custom',
@@ -42,10 +43,12 @@ export abstract class AbstractPage {
     };
 
     slideOptsOnlyExternal: SwiperOptions = {
+        zoom: false,
         allowTouchMove: false
     };
 
     slideOptsProgressbarOnlyExternal: SwiperOptions = {
+        zoom: false,
         pagination: {
             el: '.swiper-pagination',
             type: 'custom',
@@ -221,9 +224,9 @@ export abstract class AbstractPage {
         return title;
     }
 
-    protected enableMenu(menuController: MenuController, menuBrowse: boolean, menuAdvertise: boolean) {
-        menuController.enable(menuBrowse, 'menuBrowse');
-        menuController.enable(menuAdvertise, 'menuAdvertise');
+    protected async enableMenu(menuController: MenuController, menuBrowse: boolean, menuAdvertise: boolean) {
+        await menuController.enable(menuBrowse, 'menuBrowse');
+        await menuController.enable(menuAdvertise, 'menuAdvertise');
     }
 
     protected gaTrackView(platform: Platform, googleAnalyticsNativeService: GoogleAnalyticsNativeService, viewName: string) {
@@ -243,9 +246,9 @@ export abstract class AbstractPage {
         inAppBrowser.create(this.RESOURCES.TERMS_OF_USE.URL, '_blank', 'location=no');
     }
 
-    protected saveUserIfNeeded(toastController: ToastController, loadingController: LoadingController, translateService: TranslateService, userProfileService: UserProfileService, userSessionService: UserSessionService, user: User) {
+    protected async saveUserIfNeeded(toastController: ToastController, loadingController: LoadingController, translateService: TranslateService, userProfileService: UserProfileService, userSessionService: UserSessionService, user: User) {
         if (userSessionService.shouldUserBeSaved()) {
-            this.saveModifiedUser(toastController, loadingController, translateService, userProfileService, user);
+            await this.saveModifiedUser(toastController, loadingController, translateService, userProfileService, user);
         }
     }
 
@@ -259,8 +262,8 @@ export abstract class AbstractPage {
                 if (!Comparator.isEmpty(updatedUser)) {
                     user = updatedUser;
                 }
-            }, (response: HttpErrorResponse) => {
-                this.errorMsg(toastController, translateService, 'ERRORS.USER.SAVE_ERROR');
+            }, async (response: HttpErrorResponse) => {
+                await this.errorMsg(toastController, translateService, 'ERRORS.USER.SAVE_ERROR');
             });
         });
     }

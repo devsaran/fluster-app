@@ -8,13 +8,14 @@
             "SLIDE3": "Scopri i <strong>punti forti della zona</strong>",
             "SLIDE4": "<strong>Risparmia tempo</strong> e richiedi una visita subito"
         },
-        "LEGAL": "Procedendo accetto Termini e Condizioni"
+        "LEGAL": "Procedendo accetto",
+        "LEGAL_LINK": "Termini e Condizioni"
     },
     "FIRST_CHOICE": {
         "LETS_GO": "Via!",
         "WHAT_DO_YOU_WANT_TO_DO": "Stai cercando o stai offrendo un alloggio?",
         "DISCOVER": "<strong>Trova</strong> la mia nuova casa",
-        "ADVERTISE": "<strong>Crea</strong> un annuncio per una stanza o un appartamento",
+        "ADVERTISE": "<strong>Crea</strong> un annuncio gratuito per una stanza o un appartamento",
         "GENDER": {
             "YOU_ARE": "Un'ultima informazione",
             "WHY_GENDER": "Per personalizzare la tua ricerca",
@@ -42,7 +43,8 @@
             "UNDO": "Ripristina",
             "EDIT_APPOINTMENTS": "Gestisci la mia disponibilità",
             "EDIT_ADS": "Gestisci il mio annuncio",
-            "CLOSE": "Elimina il mio annuncio"
+            "CLOSE": "Elimina il mio annuncio",
+            "LIMIT_ADS": "Chi può vedere il mio annuncio?"
         }
     },
     "NEW_AD": {
@@ -111,17 +113,12 @@
             "KIDS_WELCOMED": "Bambini benvenuti"
         },
         "STEP_PHOTO": {
-            "ADD_PHOTO": "Aggiungi una foto",
+            "ADD_PHOTO_SHARE": "Aggiungi una foto della stanza",
+            "ADD_PHOTO_FLAT": "Aggiungi una foto dal tuo appartamento",
             "FROM_GALLERY": "Scegli da un album",
             "FROM_CAMERA": "Scatta una foto",
-            "AT_LEAST_ONE_PHOTO": "Aggiungi almeno una foto per mettere in risalto il tuo annuncio"
-        },
-        "STEP_APPOINTMENT": {
-            "TITLE": "Appuntamenti",
-            "SUB_TITLE": "Quando sei disponibile per le visite?",
-            "MORNING": "Mattina",
-            "AFTERNOON": "Pomeriggio",
-            "EVENING": "Sera"
+            "AT_LEAST_ONE_PHOTO_FLAT": "Aggiungi almeno una foto dal tuo appartamento per mettere in risalto il tuo annuncio",
+            "AT_LEAST_ONE_PHOTO_SHARE": "Aggiungi almeno una foto della stanza per mettere in risalto il tuo annuncio"
         },
         "STEP_LIMITATION": {
             "TITLE": "Candidato",
@@ -146,10 +143,11 @@
             "SUB_TITLE_REWARD": "Il tuo annuncio è stato pubblicato e parteciperai al nostro concorso*",
             "REWARD_LEGAL": "* Dettagli del concorso e condizioni di partecipazione",
             "DISPLAY": "Dai un'occhiata al tuo annuncio",
-            "SHARE": "Condividi l'annuncio"
+            "SHARE": "Condividi l'annuncio",
+            "APPOINTMENTS": "Imposta la tua disponibilità"
         },
         "STEP_ATTENDANCE": {
-            "TITLE": "Partecipazione",
+            "TITLE": "Un'ultima informazione prima pubblicazione",
             "SUB_TITLE": "Più persone possono partecipare allo stesso appuntamento?",
             "SINGLE": "Solo una persona per visita",
             "MULTIPLE": "Più persone, porte aperte"
@@ -208,13 +206,13 @@
         "PROPOSAL": "{{who}} ti offre {{howmany}} possibili appuntamenti, selezionane uno per accettare la richiesta",
         "PROPOSAL_SINGLE": "{{who}} ti offre questo appuntamento",
         "CONFIRM": "Accetta",
-        "NO_APPOINTMENTS_FOUND": "Purtroppo nessuno degli appuntamenti proposti è compatibile con il tuo calendario",
         "RESCHEDULE_IN_PROGRESS": "Hai richiesto un appuntamento a {{who}} ",
         "CANCELLED": "Hai rifiutato la richiesta di visita di {{who}}",
         "APPOINTMENT_IN_THE_PAST": "Hai già effettuato la visita con {{who}}",
         "APPOINTMENT_IN_THE_FUTURE": "La visita con {{who}} si terrà il giorno seguente",
         "NEW_REQUEST_TITLE": "{{who}} è interessato a una visita, vuoi accettare la richiesta?",
         "ACCEPT_REQUEST": "<strong>Accetta</strong> e scegli l'appuntamento",
+        "ACCEPT_REQUEST_CHAT": "Accetta e <strong>chatta<strong> per fissare un appuntamento",
         "REJECT_REQUEST": "Rifiuta",
         "NO_SELECTED_TIME": "Scegli un appuntamento per accettare la richiesta",
         "APPOINTMENT_SCHEDULED_FOR": {
@@ -222,9 +220,9 @@
             "END": ""
         },
         "ACTION_SHEET": {
-            "ACCEPT": "Accetta questa richiesta di visita",
-            "DECLINE": "Rifiuta questa richiesta di visita",
-            "ASK_RESCHEDULE": "Rihiedi nuovi appuntamenti",
+            "ACCEPT": "Accetta questa richiesta",
+            "DECLINE": "Rifiuta questa richiesta",
+            "ASK_RESCHEDULE": "Accetta e chatta per fissare un appuntamento",
             "FOUND_SOMEONE_ELSE": "Mi dispiace, ho già trovato qualcuno",
             "NOT_ENOUGH_DETAILS": "Questo profilo non contiene abbastanza informazioni",
             "NO_REASON": "Preferirei conoscere altri candidati",
@@ -233,7 +231,7 @@
     },
     "USER_PROFILE": {
         "WHAT_ELSE": "Altrimenti",
-        "PLACEHOLDER_PHONE": "Il mio numero di telefono",
+        "PLACEHOLDER_PHONE": "Il mio numero di telefono *",
         "PLACEHOLDER_BIO": "Due parole su di me...",
         "SELECT_SCHOOL": "Formazione",
         "SELECT_WORK": "Lavoro",
@@ -426,14 +424,14 @@
         },
         "BROWSE": {
             "DISCOVER": "Trova",
-            "MY_APPOINTMENTS": "I miei appuntamenti",
+            "MY_APPOINTMENTS": "Chat & incontri",
             "MY_BOOKMARKS": "I miei preferiti",
             "MY_APPLICANTS": "Richieste",
-            "ADVERTISE": "Pubblica"
+            "ADVERTISE": "Pubblica un annuncio"
         },
         "AD": {
             "MY_APPOINTMENTS": "I miei appuntamenti",
-            "APPLICANTS": "I miei candidati",
+            "APPLICANTS": "Chat & candidati",
             "MY_AD": "Il mio annuncio",
             "CANDIDATES": "Trova coinquilini",
             "DISCOVER": "Trova"
@@ -648,7 +646,7 @@
         "VIEWING_WHEN_TEXT_SHARE": "Quando puoi visitare la stanza di {{who}}?",
         "VIEWING_WHEN_TEXT_FLAT": "Quando puoi visitare l'appartamento di {{who}}?",
         "SELECTED_COUNT": {
-            "NO_SELECTED_BROWSE": "Scegliendo una o più finestre temporali, aumenterai le tue possibilità di ottenere un appuntamento",
+            "NO_SELECTED_BROWSE": "{{who}} vuole ricevere una o più finestre temporali per fissare un appuntamento",
             "SELECTED_COUNT_AVAILABILITY": {
                 "SINGULAR": "Hai scelto <strong>{{count}} potenziale appuntamento</strong>",
                 "PLURAL": "Hai scelto <strong>{{count}} potenziali appuntamenti</strong>"
@@ -656,17 +654,14 @@
             "NO_SPECIAL_AVAILABILITY": "Nessun appuntamento specifico, sei del tutto <strong>flessibile</strong>"
         },
         "CONFIRM": "Conferma",
-        "SEND": "Invia",
+        "SEND": "Invia ora",
         "MISSING_PHONE": {
-            "TITLE": "Il tuo numero di telefono",
-            "SUB_TITLE": "Le persone con cui hai un appuntamento ti potranno contattare a questo numero",
-            "REMARK": "Il tuo numero di telefono sarà visibile solamente alle persone con cui hai un appuntamento",
-            "REMARK_OPTIONAL": "Il tuo numero di telefono è opzionale e sarà visibile solamente alle persone con cui hai un appuntamento"
+            "REMARK_OPTIONAL": "* Il tuo numero di telefono è opzionale e sarà visibile solamente alle persone con cui hai un appuntamento"
         },
         "TIPS": {
             "SELECT_MANY_TIMESLOTS": {
-                "BEGIN": "Scegliendo",
-                "HIGHLIGHT": "più finestre temporali",
+                "BEGIN": "Imposta",
+                "HIGHLIGHT": "la tua disponibilità",
                 "END": ", aumenti le tue possibilità di ottenere un appuntamento"
             },
             "SELECT_MANY_DAYS": {

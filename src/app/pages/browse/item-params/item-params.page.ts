@@ -94,8 +94,8 @@ export class ItemParamsPage extends AbstractItemsPage implements OnInit {
         }
     }
 
-    ionViewDidLeave() {
-        this.saveUserIfNeeded(this.toastController, this.loadingController, this.translateService, this.userProfileService, this.userSessionService, this.user);
+    async ionViewDidLeave() {
+        await this.saveUserIfNeeded(this.toastController, this.loadingController, this.translateService, this.userProfileService, this.userSessionService, this.user);
     }
 
     // Location
@@ -114,7 +114,7 @@ export class ItemParamsPage extends AbstractItemsPage implements OnInit {
             }
         });
 
-        modal.present();
+        await modal.present();
     }
 
     private updateUserParamsAddress(currentLocation: Address) {

@@ -1,5 +1,5 @@
-<ion-header #adsDetailsHeader id="ads-details-header">
-  <ion-toolbar>
+<ion-header id="ads-details-header">
+  <ion-toolbar #adsDetailsHeaderToolbar>
 
     <ion-buttons slot="start">
       <ion-menu-toggle>
@@ -21,7 +21,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content appNavbarOnScroll [header]="detailsHeader" role="ad" id="ads-details-content" [fullscreen]="true" [forceOverscroll]="true" [scrollEvents]="true">
+<ion-content appNavbarOnScroll [toolbar]="detailsHeaderToolbar" role="ad" id="ads-details-content" [fullscreen]="true" [forceOverscroll]="true" [scrollEvents]="true">
 
   <app-content-advertise-notification [displayOnInit]="false"></app-content-advertise-notification>
 
@@ -33,12 +33,13 @@
     <ion-spinner ion-text color="primary"></ion-spinner>
   </div>
 
-  <app-no-ads *ngIf="!hasItem() && loaded" (notifyNavigateNewItem)="navigateNewItem()"></app-no-ads>
+  <app-no-ads *ngIf="!hasItem() && loaded" (notifyNavigateNewItem)="navigateNewItem('/ads-details')"></app-no-ads>
 </ion-content>
 
 <ion-footer role="ad">
   <ion-toolbar role="buttons" *ngIf="hasItem() && loaded" class="actions-buttons" padding-start padding-end>
     <ion-button expand="full" shape="round" (click)="shareAd()">
+      <ion-icon slot="start" name="share"></ion-icon>
       {{'ITEM_DETAILS.POPOVER.SHARE' | translate}}
     </ion-button>
   </ion-toolbar>

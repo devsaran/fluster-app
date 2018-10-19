@@ -93,14 +93,14 @@ export class MyApplicantsPage extends MyItemsPage {
             const modal: HTMLIonPopoverElement = await this.getProductModal();
 
             modal.onDidDismiss().then((detail: OverlayEventDetail) => {
-                if (detail && !detail.data.success) {
+                if (detail && !detail.data) {
                     this.itemCards = new Array();
                     this.lastPageReached = true;
                     this.couldViewApplicants = false;
                 }
             });
 
-            modal.present();
+            await modal.present();
         }
     }
 

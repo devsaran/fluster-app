@@ -122,10 +122,6 @@ export class ApplicantSelectionPage extends AbstractApplicantSelectionPage {
         }
     }
 
-    convertDate(selected: string): Date {
-        return new Date(selected);
-    }
-
     // Agenda
 
     // Filter proposed dates with the one already scheduled, in case it changed
@@ -220,22 +216,22 @@ export class ApplicantSelectionPage extends AbstractApplicantSelectionPage {
 
                     myButtons.push({
                         text: data[2],
-                        handler: () => {
-                            this.declineWithReason(this.RESOURCES.APPLICANT.CANCELLATION.REASON.FOUND_SOMEONE_ELSE);
+                        handler: async () => {
+                            await this.declineWithReason(this.RESOURCES.APPLICANT.CANCELLATION.REASON.FOUND_SOMEONE_ELSE);
                         }
                     });
 
                     myButtons.push({
                         text: data[3],
-                        handler: () => {
-                            this.declineWithReason(this.RESOURCES.APPLICANT.CANCELLATION.REASON.NOT_ENOUGH_DETAILS);
+                        handler: async () => {
+                            await this.declineWithReason(this.RESOURCES.APPLICANT.CANCELLATION.REASON.NOT_ENOUGH_DETAILS);
                         }
                     });
 
                     myButtons.push({
                         text: data[4],
-                        handler: () => {
-                            this.declineWithReason(this.RESOURCES.APPLICANT.CANCELLATION.REASON.NO_REASON);
+                        handler: async () => {
+                            await this.declineWithReason(this.RESOURCES.APPLICANT.CANCELLATION.REASON.NO_REASON);
                         }
                     });
 
@@ -257,12 +253,12 @@ export class ApplicantSelectionPage extends AbstractApplicantSelectionPage {
         );
     }
 
-    private declineWithReason(reason: string) {
+    private async declineWithReason(reason: string) {
         this.gaTrackEvent(this.platform, this.googleAnalyticsNativeService, this.RESOURCES.GOOGLE.ANALYTICS.TRACKER.EVENT.CATEGORY.ADS.ADS, this.RESOURCES.GOOGLE.ANALYTICS.TRACKER.EVENT.ACTION.ADS.APPLICANT.APPLICANT_DECLINE);
 
         this.applicant.cancellation = new ApplicantCancellation(reason);
 
-        this.updateApplication(this.RESOURCES.APPLICANT.STATUS.CANCELLED, null);
+        await this.updateApplication(this.RESOURCES.APPLICANT.STATUS.CANCELLED, null);
     }
 
     isStatusNew(): boolean {
@@ -313,7 +309,13 @@ export class ApplicantSelectionPage extends AbstractApplicantSelectionPage {
             }
         });
 
-        modal.present();
+        await modal.present();
+    }
+
+    doReschedule() {
+        if (this.isStatusNew() && !this.hasSelectedDates()) {
+            this.reschedule();
+        }
     }
 
     protected finishUpdateApplication(updatedApplicant: Applicant) {
@@ -451,8 +453,8 @@ export class ApplicantSelectionPage extends AbstractApplicantSelectionPage {
     private createComplaint(reason: string) {
         this.complaintService.userComplaint(this.applicant.user, reason).then((result: boolean) => {
             // Do nothing
-        }, (response: HttpErrorResponse) => {
-            this.errorMsg(this.toastController, this.translateService, 'ERRORS.ITEM_DETAILS.COMPLAINT');
+        }, async (response: HttpErrorResponse) => {
+            await this.errorMsg(this.toastController, this.translateService, 'ERRORS.ITEM_DETAILS.COMPLAINT');
         });
     }
 

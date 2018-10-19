@@ -35,7 +35,7 @@ export class Resources {
         const spotifyClientId: string = '{{SPOTIFY_CLIENT_ID}}';
 
         return {
-            APP_VERSION: '5.0.0-beta.5',
+            APP_VERSION: '5.1.3',
 
             GITHUB: {
                 URL: 'https://github.com/fluster/fluster-app'
@@ -173,6 +173,10 @@ export class Resources {
                                 WIZARD: {
                                     NEW_AD: 'new_ad',
                                     EDIT_AD: 'edit_ad'
+                                },
+                                ADMIN: {
+                                    APPOINTMENTS: 'admin_appointments',
+                                    LIMITATION: 'admin_limitation'
                                 }
                             },
                             FIRST_CHOICE: 'first_choice',
@@ -233,6 +237,7 @@ export class Resources {
                                     DELETE: 'delete',
                                     EXTEND: 'extend',
                                     EDIT_END: 'edit_end',
+                                    EDIT_LIMITATION: 'edit_limitation',
                                     UNDO: 'undo',
                                     APPLICANT: {
                                         APPLICANT_DETAILS: 'applicants_details',

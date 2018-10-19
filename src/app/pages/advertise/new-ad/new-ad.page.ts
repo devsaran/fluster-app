@@ -1,8 +1,5 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {LoadingController, MenuController, ModalController, NavController, Platform, Slides, ToastController} from '@ionic/angular';
-import {Location} from '@angular/common';
-
-import {Subscription} from 'rxjs';
 
 import {HttpErrorResponse} from '@angular/common/http';
 
@@ -17,6 +14,7 @@ import {User} from '../../../services/model/user/user';
 
 // Resources and utils
 import {ItemsComparator} from '../../../services/core/utils/items-utils';
+import {Comparator} from '../../../services/core/utils/utils';
 
 // Services
 import {NewItemService} from '../../../services/advertise/new-item-service';
@@ -35,22 +33,18 @@ export class NewAdPage extends AbstractPage implements OnInit {
 
     @ViewChild('newAdSlider') slider: Slides;
 
-    fistChoice: boolean = false;
-
-    private customBackActionSubscription: Subscription;
-
     private loading: HTMLIonLoadingElement;
 
     loadSlidePrice: boolean = false;
     loadSlideAttributes: boolean = false;
     loadSlideLifestyle: boolean = false;
-    loadSlideAppointment: boolean = false;
     loadSlideAttendance: boolean = false;
-    loadSlideLimitation: boolean = false;
     loadSlideDone: boolean = false;
 
     // Use to trigger the opening of the photo picker modal in case of android restart
     pendingAndroidPhoto: boolean = false;
+
+    enteredAsDone: boolean = false;
 
     constructor(private navController: NavController,
                 private menuController: MenuController,
@@ -58,7 +52,6 @@ export class NewAdPage extends AbstractPage implements OnInit {
                 private loadingController: LoadingController,
                 private toastController: ToastController,
                 private modalController: ModalController,
-                private location: Location,
                 private translateService: TranslateService,
                 private newItemService: NewItemService,
                 private adsService: AdsService,
@@ -69,29 +62,16 @@ export class NewAdPage extends AbstractPage implements OnInit {
         super();
     }
 
-    ngOnInit() {
-        this.initNavigation();
-
-        this.overrideHardwareBackAction();
+    async ngOnInit() {
+        await this.initNavigation();
     }
 
     async ionViewWillEnter() {
-        // In case new user who selected directly ad in first-choice
-        const newAdNavParams: NewAdNavParams = await this.navParamsService.getNewAdNavParams();
-        this.fistChoice = this.isFirstChoice(newAdNavParams);
-    }
-
-    private isFirstChoice(newAdNavParams: NewAdNavParams) {
-        return newAdNavParams && newAdNavParams.fistChoice === true;
+        this.enteredAsDone = this.newItemService.isDone();
+        this.loadSlideDone = this.enteredAsDone;
     }
 
     async ionViewDidEnter() {
-        if (this.newItemService.isDone()) {
-            // We may comeback from profile
-            this.enableMenu(this.menuController, false, true);
-            return;
-        }
-
         if (this.newItemService.hasPendingAndroidPhotoRecoveryURI()) {
             // There was a restart on Android because of low memory
             await this.slider.slideTo(this.newItemService.isEdit() ? 1 : 2, 0);
@@ -106,38 +86,25 @@ export class NewAdPage extends AbstractPage implements OnInit {
         }
     }
 
-    ionViewDidLeave() {
-        if (this.customBackActionSubscription) {
-            this.customBackActionSubscription.unsubscribe();
-        }
-    }
-
     isEditMode(): boolean {
         return this.newItemService.isEdit();
     }
 
-    private overrideHardwareBackAction() {
-        this.platform.ready().then(() => {
-            this.customBackActionSubscription = this.platform.backButton.subscribe(() => {
-                this.modalController.getTop().then((element: HTMLIonModalElement) => {
-                    // A modal might be open, in such a case we are closing it with the back button we don't need to navigate
-                    if (!element) {
-                        const activeView: string = this.location.path();
-
-                        if (activeView != null && activeView.indexOf('/new-ad') > -1) {
-                            this.backToPreviousSlide();
-                        } else {
-                            this.location.back();
-                        }
-                    }
-                });
+    @HostListener('document:ionBackButton', ['$event'])
+    private overrideHardwareBackAction($event: any) {
+        $event.detail.register(100, async () => {
+            this.modalController.getTop().then(async (element: HTMLIonModalElement) => {
+                // A modal might be open, in such a case we are closing it with the back button we don't need to navigate
+                if (!element) {
+                    await this.backToPreviousSlide();
+                }
             });
         });
     }
 
-    private initNavigation() {
+    private async initNavigation() {
         // Disable menu
-        this.enableMenu(this.menuController, false, false);
+        await this.enableMenu(this.menuController, false, false);
     }
 
     async backToPreviousSlide() {
@@ -147,16 +114,11 @@ export class NewAdPage extends AbstractPage implements OnInit {
             await this.slider.slidePrev();
         } else {
             const newAdNavParams: NewAdNavParams = await this.navParamsService.getNewAdNavParams();
-            if (this.isFirstChoice(newAdNavParams)) {
-                newAdNavParams.fistChoice = false;
-            }
 
-            if (this.fistChoice) {
-                this.navController.navigateRoot('/ads-next-appointments').then(() => {
-                    // Do nothing
-                });
+            if (!newAdNavParams || Comparator.isStringEmpty(newAdNavParams.backToPageUrl) || newAdNavParams.backToPageUrl === '/first-choice') {
+                await this.navController.navigateRoot('/ads-next-appointments');
             } else {
-                this.location.back();
+                await this.navController.navigateBack(newAdNavParams.backToPageUrl);
             }
         }
     }
@@ -184,11 +146,11 @@ export class NewAdPage extends AbstractPage implements OnInit {
             const user: User = this.userSessionService.getUser();
 
             this.userProfileService.saveIfModified(user).then((updatedUser: User) => {
-                this.newItemService.saveNewItem().then(() => {
+                this.newItemService.saveNewItem().then(async () => {
                     // Save new item in actual session
                     this.adsService.setSelectedItem(this.newItemService.getNewItem());
 
-                    this.navigateToDone();
+                    await this.navigateToDone();
                 }, (errorResponse: HttpErrorResponse) => {
                     this.displayPublishError(errorResponse);
                 });
@@ -199,8 +161,8 @@ export class NewAdPage extends AbstractPage implements OnInit {
     }
 
     private displayPublishError(err: HttpErrorResponse) {
-        this.loading.dismiss().then(() => {
-            this.errorMsg(this.toastController, this.translateService, 'ERRORS.WIZARD.NOT_ADDED');
+        this.loading.dismiss().then(async () => {
+            await this.errorMsg(this.toastController, this.translateService, 'ERRORS.WIZARD.NOT_ADDED');
 
             this.gaTrackError();
         });
@@ -214,13 +176,8 @@ export class NewAdPage extends AbstractPage implements OnInit {
         }
     }
 
-    private navigateToDone() {
-        if (this.ENV_CORDOVA) {
-            // On big screen the slide not gonna be displayed correctly
-            this.enableMenu(this.menuController, false, true);
-        }
-
-        this.updateSlider();
+    private async navigateToDone() {
+        await this.updateSlider();
 
         this.loading.dismiss().then(() => {
             this.slider.slideNext();
@@ -237,61 +194,45 @@ export class NewAdPage extends AbstractPage implements OnInit {
         this.navController.navigateRoot('/ads-details', true);
     }
 
+    async navigateToAdminAppointments() {
+        this.navigateToAdminSetBackPage();
+        await this.navController.navigateRoot('/admin-appointments', true);
+    }
+
+    async navigateToAdminLimitation() {
+        this.navigateToAdminSetBackPage();
+        await this.navController.navigateRoot('/admin-limitation', true);
+    }
+
+    private navigateToAdminSetBackPage() {
+        this.navParamsService.setAdminAdsNavParams({backToPageUrl: '/new-ad'});
+    }
+
     // HACK: Fck it, Load incrementaly these steps for devices with small memory which could not handle a important load on load of the slides
 
-    loadNextSlidePrice() {
+    async loadNextSlidePrice() {
         this.loadSlidePrice = true;
-        this.updateSlider();
+        await this.updateSlider();
     }
 
-    loadNextSlideAttributes() {
+    async loadNextSlideAttributes() {
         this.loadSlideAttributes = true;
-        this.updateSlider();
+        await this.updateSlider();
     }
 
-    loadNextSlideLifestyle() {
-        this.loadSlideLifestyle = true;
-        this.updateSlider();
-    }
-
-    loadNextSlidesFromPrice() {
+    async loadNextSlidesFromPrice() {
         if (this.isItemFlat()) {
-            this.loadSlideAppointment = true;
+            this.loadSlideAttendance = true;
         } else {
             this.loadSlideLifestyle = true;
         }
 
-        this.updateSlider();
+        await this.updateSlider();
     }
 
-    loadNextSlidesFromAttributes() {
-        if (this.isItemFlat()) {
-            this.loadSlideAttendance = true;
-        } else {
-            this.loadSlideAppointment = true;
-        }
-
-        this.updateSlider();
-    }
-
-    loadNextSlideLimitation() {
-        this.loadSlideLimitation = true;
-        this.updateSlider();
-    }
-
-    loadNextSlideFromAppointments() {
-        if (this.isItemFlat()) {
-            this.loadSlideLimitation = true;
-        } else {
-            this.loadSlideDone = true;
-        }
-
-        this.updateSlider();
-    }
-
-    loadNextSlideDone() {
+    async loadNextSlideDone() {
         this.loadSlideDone = true;
-        this.updateSlider();
+        await this.updateSlider();
     }
 
     isDone(): boolean {
@@ -303,4 +244,12 @@ export class NewAdPage extends AbstractPage implements OnInit {
         await this.slider.update();
     }
 
+    async initAfterSliderLoad() {
+        if (!this.slider) {
+            return;
+        }
+
+        // Force the slider to stop, weird bug on iPad not using the configuration
+        await this.slider.stopAutoplay();
+    }
 }

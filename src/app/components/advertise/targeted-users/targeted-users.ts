@@ -3,16 +3,16 @@ import {Component, Input, OnChanges, SimpleChange, OnDestroy} from '@angular/cor
 import {Subscription} from 'rxjs';
 
 // Model
-import {Item} from '../../../../services/model/item/item';
-import {Location} from '../../../../services/model/location/location';
+import {Item} from '../../../services/model/item/item';
+import {Location} from '../../../services/model/location/location';
 
 // Resources and utils
-import {Resources} from '../../../../services/core/utils/resources';
-import {Comparator} from '../../../../services/core/utils/utils';
-import {ItemsComparator} from '../../../../services/core/utils/items-utils';
+import {Resources} from '../../../services/core/utils/resources';
+import {Comparator} from '../../../services/core/utils/utils';
+import {ItemsComparator} from '../../../services/core/utils/items-utils';
 
 // Services
-import {AdsStatisticsService} from '../../../../services/advertise/ads-statistics-service';
+import {AdsStatisticsService} from '../../../services/advertise/ads-statistics-service';
 
 @Component({
     templateUrl: 'targeted-users.html',
@@ -44,6 +44,8 @@ export class TargetedUsersComponent implements OnChanges, OnDestroy {
     @Input() ageMax: number;
     @Input() gender: string;
 
+    @Input() admin: boolean = false;
+
     constructor(private adsStatisticsService: AdsStatisticsService) {
 
         this.notifierSubscription = this.adsStatisticsService.notifyAdsStatisticsChanged
@@ -51,8 +53,8 @@ export class TargetedUsersComponent implements OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-        // Only start refresh when one single change happened
-        if (!Comparator.isEmpty(changes) && Object.keys(changes).length === 1) {
+        // Only start refresh when one single change happened or if we wish thru the admin variable
+        if ((!Comparator.isEmpty(changes) && Object.keys(changes).length === 1) || this.admin) {
             if (!Comparator.isEmpty(changes['price'])) {
                 if (!Comparator.isNumberNullOrZero(changes['price'].currentValue) && changes['price'].currentValue >= 100) {
                     // Don't refresh statistics below 100 CHF or whatever
